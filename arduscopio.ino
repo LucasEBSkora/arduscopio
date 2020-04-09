@@ -100,36 +100,40 @@ void adquirir(unsigned int *valores, unsigned int numeroAmostras) {
     i = 1;
   }
 
+  //Serial.println(i);
+
   if (Configuracoes.microMinEntreAmostras == 0) {//adquirir o mais rápido possível
     for (; i < numeroAmostras; ++i) {
       valores[i] = adquirirUnico();
   
     }  
-  } else {
-    int deltaT = 0;
-    
+  } else {    
+    unsigned int deltaT = 0;
+
+
     Relogio.reiniciar();
     
-    for (; i < numeroAmostras; ++i) {
+    while (i < numeroAmostras) {
 
       deltaT += Relogio.variacao();
       
       if (deltaT > Configuracoes.microMinEntreAmostras) {
         
-        valores[i] = adquirirUnico();
+        valores[i++] = adquirirUnico();
         deltaT -= Configuracoes.microMinEntreAmostras;
-      }
   
-    }  
+      }
+      
+    } 
+      
   }
   
-
 }
 
 //Transmite os sinais para o computador
 void transmitir(unsigned int *valores, unsigned int numeroAmostras) {
 
-  int max = pow(2, Configuracoes.resolucao) - 1;
+  float max = pow(2, Configuracoes.resolucao) - 1;
   int i;
 
   for (i = 0; i < numeroAmostras; ++i) {
@@ -142,18 +146,21 @@ void transmitir(unsigned int *valores, unsigned int numeroAmostras) {
 void setup() {
   Serial.begin(115200);  
 
-  Configuracoes.tipoTrigger = subida;
+  Configuracoes.tipoTrigger = descida;
   Configuracoes.nivelTrigger = 2000;
   Configuracoes.resolucao = 12;
-  Configuracoes.microMinEntreAmostras = 100;
+  Configuracoes.microMinEntreAmostras = 1000;
   Configuracoes.continuo = false;
   numeroAmostras = 500;
 
   valores = (unsigned int*) malloc(sizeof(unsigned int) * numeroAmostras);
 
+  for(int i = 0; i < numeroAmostras; ++i) valores[i] = 0;
+    
   setupADC();
   
   Serial.setTimeout(10);
+
   
 
 }
