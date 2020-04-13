@@ -27,16 +27,20 @@ unsigned int adquirirUnico() { //Função usada para fazer uma única leitura
 //adquire os valores necessários de acordo com as configurações feitas
 void adquirir(unsigned int *valores, unsigned int numeroAmostras) {
   int i;
-
+  unsigned int deltaT = 0;
+  
    if (Configuracoes.tipoTrigger == desativado) {
      i = 0;
    } else if (Configuracoes.tipoTrigger == subida) { //Com trigger: quando o sinal passar do valor de Configuracoes.nivelTrigger subindo, o sinal começa a ser adquirido "de verdade"
     
     int anterior = adquirirUnico(), atual = adquirirUnico();
+
+    Relogio.reiniciar();
     
-    while (anterior >= Configuracoes.nivelTrigger || atual < Configuracoes.nivelTrigger) {
+    while ((anterior >= Configuracoes.nivelTrigger || atual < Configuracoes.nivelTrigger) && deltaT <= 10000*Configuracoes.microMinEntreAmostras) {
       anterior = atual;
       atual = adquirirUnico();
+      deltaT += Relogio.variacao();
     }
     
     valores[0] = atual;
@@ -45,16 +49,17 @@ void adquirir(unsigned int *valores, unsigned int numeroAmostras) {
   } else { //Com trigger: quando o sinal passar do valor de Configuracoes.nivelTrigger descendo, o sinal começa a ser adquirido "de verdade"
     
     int anterior = adquirirUnico(), atual = adquirirUnico();
-    while (anterior <= Configuracoes.nivelTrigger || atual > Configuracoes.nivelTrigger) {
+
+    Relogio.reiniciar();
+    
+    while ((anterior <= Configuracoes.nivelTrigger || atual > Configuracoes.nivelTrigger) && deltaT <= 10000*Configuracoes.microMinEntreAmostras) {
       anterior = atual;
       atual = adquirirUnico();
-     
+      deltaT += Relogio.variacao(); 
     }
     valores[0] = atual;
     i = 1;
   }
-
-  //Serial.println(i);
 
   if (Configuracoes.microMinEntreAmostras == 0) {//adquirir o mais rápido possível
     for (; i < numeroAmostras; ++i) {
@@ -62,11 +67,11 @@ void adquirir(unsigned int *valores, unsigned int numeroAmostras) {
   
     }  
   } else {    
-    unsigned int deltaT = 0;
+
 
 
     Relogio.reiniciar();
-    
+
     while (i < numeroAmostras) {
 
       deltaT += Relogio.variacao();
@@ -75,7 +80,7 @@ void adquirir(unsigned int *valores, unsigned int numeroAmostras) {
         
         valores[i++] = adquirirUnico();
         deltaT -= Configuracoes.microMinEntreAmostras;
-  
+
       }
       
     } 
@@ -87,11 +92,11 @@ void adquirir(unsigned int *valores, unsigned int numeroAmostras) {
 //Transmite os sinais para o computador
 void transmitir(unsigned int *valores, unsigned int numeroAmostras) {
 
-  float max = pow(2, Configuracoes.resolucao) - 1;
+
   int i;
 
   for (i = 0; i < numeroAmostras; ++i) {
-    Serial.println(3.3*valores[i]/max);
+    Serial.println(3.3*valores[i]/Configuracoes.valorMax);
     //Serial.println(valores[i]);
   }
 }
@@ -113,18 +118,39 @@ void setup() {
 
 }
 
+String adquirirPalavra() {
+  String comando = Serial.readStringUntil(' ');
+  
+  if (comando[comando.length() - 1] == '\n') //se houver, remove new line
+    comando.remove(comando.length() - 1);
+
+   return comando;
+}
+
+
 void loop() {
   
   if (Serial.available()) {
-      String comando = Serial.readStringUntil(' ');
-      Serial.println(comando);
+      String comando = adquirirPalavra();
       
       if (comando == "LER") {
+        Serial.println(0);
         adquirir(valores, Configuracoes.numeroAmostras);
         transmitir(valores, Configuracoes.numeroAmostras);
       } else if (comando == "TRIG") {
-        comando = Serial.readStringUntil(' ');
+        comando = adquirirPalavra();
+        Configuracoes.setTrig(comando);
+        //Serial.println(Configuracoes.tipoTrigger); 
+      } else if (comando == "TRIGNIVEL") {
+        comando = adquirirPalavra();
+        Configuracoes.setNivelTrigger(atof(comando.c_str()));
         
+      } else if (comando == "RESOLUCAO") {
+        comando = adquirirPalavra();
+        Configuracoes.setRes(int(comando.c_str()));
+      } else if (comando == "MINTEMPO") {
+        comando = adquirirPalavra();
+        Configuracoes.setMinTempo(atoi(comando.c_str()));
       }
       
     }
