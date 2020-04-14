@@ -4,7 +4,7 @@ configuracoes::configuracoes() {
   tipoTrigger = subida;
   nivelTrigger = 2000;
   microMinEntreAmostras = 10;
-  numeroAmostras = 300;
+  numeroAmostras = 20;
   resolucao = 12;
   valorMax = pow(2, resolucao) - 1;
 }

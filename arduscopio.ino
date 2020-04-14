@@ -13,14 +13,33 @@ unsigned int* valores;
 
 unsigned int setupADC() {
 
-  analogReadResolution(Configuracoes.resolucao);
-  pinMode(PINO_AQUISICAO, INPUT);
+  //http://frenki.net/2013/10/fast-analogread-with-arduino-due/
+  //Liga o clock do ADC
+  bitSet(PMC->PMC_PCER1, 5);
+  bitClear(PMC->PMC_PCDR1, 5);
 
+  //272105984
+
+  //inicializa registrador de configuração do ADC
+  
+  byte PRESCAL = 2;
+  byte STARTUP = 8;
+  byte SETTLING = 3;
+  byte TRANSFER = 1;
+  ADC->ADC_MR = (PRESCAL << 8) + (STARTUP << 16) + (SETTLING << 20) + (TRANSFER << 28);
+
+  ADC->ADC_CHER = 0x80;
+
+//  Serial.println((PRESCAL << 8) + (STARTUP << 16) + (SETTLING << 20) + (TRANSFER << 28));
+//  Serial.println(ADC->ADC_MR);
 }
 
 
 unsigned int adquirirUnico() { //Função usada para fazer uma única leitura
-  return analogRead(PINO_AQUISICAO);
+
+  ADC->ADC_CR = 2;//Começa conversão
+  while (!(ADC->ADC_ISR & 0x80)); //espera conversão
+  return ADC->ADC_CDR[7] >> (12 - Configuracoes.resolucao);
 }
 
 

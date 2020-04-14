@@ -1,0 +1,41 @@
+enable ADC controller MCK in Power Management Controller (PMC- pagina 538)
+ID 37
+
+PMC_PCER1 bit 5 (PID37) = 1
+PMC_PCDR1 bit 5 (PID37) = 0
+
+choose analog input ADC_CHER
+A0 = AD7 (?)
+ADCHER bit 7 (CH7) = 1 (?)
+
+
+ADC Mode Register:
+	TRGEN = 0
+	TRGSEL = indiferente
+	LOWRES = 0
+	SLEEP = 0
+	FWUP = 0
+	FREERUN = 0
+	PRESCAL:MCK/((PRESCAL+1)*2)
+	STARTUP: Investigar????
+	SETTLING: Possivelmente pode ser 0
+	ANACH: Indiferente
+	TRACKTIM: Possivelmente pode ser 0
+	TRANSFER: Possivelmente pode ser 0
+	USEQ: 0
+ADC_MR = 0x0(STARTUP)(PRESCAL)0 ?
+
+When a conversion is completed, the resulting 12-bit digital value is stored
+	in the Channel Data Register (ADC_CDRx) and in the 
+ADC Last Converted Data Register (ADC_LCDR)
+
+channel EOC bit in the Status Register (ADC_SR) set and the DRDY set
+
+reading ADC_CDR register clears corresponding EOC bit
+
+Conversion of the active analog channels are started with
+a software or hardware trigger. The software trigger is provided
+by writing the Control Register (ADC_CR) wit the START bit at 1
+
+ADC_CR = 2 -> começa a ler
+
