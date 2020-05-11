@@ -3,6 +3,8 @@
 
 #include "Arduino.h"
 
+//Uma classe simples para calcular variações de tempo
+
 class relogio {
   private:
     unsigned long t0;
@@ -10,8 +12,15 @@ class relogio {
     unsigned long dt;
   
   public:
+    //Construtor sem parâmetros
     relogio();
+    //Destrutor vazio
+    ~relogio();
+
+    //reinicia o timer
     void reiniciar();
+    
+    //retorna o tempo em milissegundos desde à última chamada a variacao ou reiniciar 
     unsigned long variacao();
     
   
