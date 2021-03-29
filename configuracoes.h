@@ -25,7 +25,7 @@ class configuracoes {
     //Quantas amostras são tomadas por aquisição (números muito grandes podem encher a memória).
     unsigned int numeroAmostras;
 
-    //Uma constante representando o máximo valor antes da conversão para float que a leitura pode assumir ((2 ^ resolucao) -1)
+    //Uma constante representando o máximo valor que a leitura pode assumir ((2 ^ resolucao) -1)
     unsigned int valorMax;
     
     //Construtor vazio, inicializa com valores padrão
@@ -34,8 +34,8 @@ class configuracoes {
     //Configura o tipo de Trigger. Pode receber os valores "DESATIVADO", "SUBIDA" e "DESCIDA"
     void setTrig(String comando);
 
-    //Recebe um valor entre 0 e 3.3 e seta o valor de nivelTRigger de acordo com a resolução usada
-    void setNivelTrigger(float nivel);
+    //Recebe um valor entre 0 e 3.3 e seta o valor de nivelTrigger de acordo com a resolução usada
+    void setNivelTrigger(unsigned short nivel);
     
     //Seta a resolução. Pode receber valores entre 1 e 12. 
     void setRes(byte resolucao);

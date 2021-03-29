@@ -8,6 +8,7 @@ choose analog input ADC_CHER
 A0 = AD7 (?)
 ADCHER bit 7 (CH7) = 1 (?)
 
+ADC - página 1317
 
 ADC Mode Register:
 	TRGEN = 0
@@ -15,7 +16,8 @@ ADC Mode Register:
 	LOWRES = 0
 	SLEEP = 0
 	FWUP = 0
-	FREERUN = 0
+	FREERUN = 0 experimentar  aqui?
+
 	PRESCAL:MCK/((PRESCAL+1)*2)
 	STARTUP: Investigar????
 	SETTLING: Possivelmente pode ser 0
@@ -35,7 +37,7 @@ reading ADC_CDR register clears corresponding EOC bit
 
 Conversion of the active analog channels are started with
 a software or hardware trigger. The software trigger is provided
-by writing the Control Register (ADC_CR) wit the START bit at 1
+by writing the Control Register (ADC_CR) with the START bit at 1
 
 ADC_CR = 2 -> começa a ler
 

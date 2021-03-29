@@ -5,9 +5,7 @@ relogio::relogio() {
   reiniciar();
 }
 
-relogio::~relogio() {
-
-}
+relogio::~relogio() {}
 
 void relogio::reiniciar() {
   t0 = micros();

@@ -1,10 +1,10 @@
 #include "configuracoes.h"
 
 configuracoes::configuracoes() {
-  tipoTrigger = subida;
+  tipoTrigger = desativado;
   nivelTrigger = 2000;
-  microMinEntreAmostras = 10;
-  numeroAmostras = 20;
+  microMinEntreAmostras = 0;
+  numeroAmostras = 500;
   resolucao = 12;
   valorMax = pow(2, resolucao) - 1;
 }
@@ -19,8 +19,8 @@ void configuracoes::setTrig(String comando) {
     tipoTrigger = descida;
 }
 
-void configuracoes::setNivelTrigger(float nivel) {
-  nivelTrigger = nivel*(valorMax/3.3);
+void configuracoes::setNivelTrigger(unsigned short nivel) {
+  nivelTrigger = nivel;
 }
 
 void configuracoes::setRes(byte res) {

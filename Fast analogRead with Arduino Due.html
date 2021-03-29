@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head><script src="//archive.org/includes/analytics.js?v=cf34f82" type="text/javascript"></script>
+<script type="text/javascript">window.addEventListener('DOMContentLoaded',function(){var v=archive_analytics.values;v.service='wb';v.server_name='wwwb-app29.us.archive.org';v.server_ms=250;archive_analytics.send_pageview({});});</script><script type="text/javascript" src="/_static/js/playback.bundle.js?v=bQvHU8mx" charset="utf-8"></script>
+<script type="text/javascript" src="/_static/js/wombat.js?v=cRqOKCOw" charset="utf-8"></script>
+<script type="text/javascript">
+  __wm.init("https://web.archive.org/web");
+  __wm.wombat("http://frenki.net:80/2013/10/fast-analogread-with-arduino-due/","20191026164654","https://web.archive.org/","web","/_static/",
+	      "1572108414");
+</script>
+<link rel="stylesheet" type="text/css" href="/_static/css/banner-styles.css?v=bsmaklHF" />
+<link rel="stylesheet" type="text/css" href="/_static/css/iconochive.css?v=qtvMKcIJ" />
+<!-- End Wayback Rewrite JS Include -->
+
+	<meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
+	<link href="https://web.archive.org/web/20191026164654cs_/http://fonts.googleapis.com/css?family=Bitter" rel="stylesheet" type="text/css">
+	<link type="text/css" rel="stylesheet" href="/web/20191026164654cs_/http://frenki.net/c4.css"/>
+	<title>Fast analogRead with Arduino Due</title>
+	<meta name="description" content="Fast analogRead with Arduino Due. Can be used as cheap 1MSPS oscilloscope."/>
+	<link rel="alternate" type="application/rss+xml" title="FRENKI.NET - RSS" href="https://web.archive.org/web/20191026164654/http://frenki.net/rss.xml"/>
+	<link rel="icon" type="image/png" href="https://web.archive.org/web/20191026164654im_/http://frenki.net/favicon.png">
+	<script type="text/javascript">
+
+	  var _gaq = _gaq || [];
+	  _gaq.push(['_setAccount', 'UA-814714-16']);
+	  _gaq.push(['_trackPageview']);
+
+	  (function() {
+		var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+		ga.src = ('https:' == document.location.protocol ? 'https://web.archive.org/web/20191026164654/https://ssl' : 'https://web.archive.org/web/20191026164654/http://www') + '.google-analytics.com/ga.js';
+		var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+	  })();
+
+	</script>
+</head>
+<body><!-- BEGIN WAYBACK TOOLBAR INSERT -->
+<style type="text/css">
+body {
+  margin-top:0 !important;
+  padding-top:0 !important;
+  /*min-width:800px !important;*/
+}
+</style>
+<script>__wm.rw(0);</script>
+<div id="wm-ipp-base" lang="en" style="display:none;direction:ltr;">
+<div id="wm-ipp" style="position:fixed;left:0;top:0;right:0;">
+<div id="wm-ipp-inside">
+  <div style="position:relative;">
+    <div id="wm-logo" style="float:left;width:110px;padding-top:12px;">
+      <a href="/web/" title="Wayback Machine home page"><img src="/_static/images/toolbar/wayback-toolbar-logo-200.png" srcset="/_static/images/toolbar/wayback-toolbar-logo-100.png, /_static/images/toolbar/wayback-toolbar-logo-150.png 1.5x, /_static/images/toolbar/wayback-toolbar-logo-200.png 2x" alt="Wayback Machine" style="width:100px" border="0" /></a>
+    </div>
+    <div class="r" style="float:right;">
+      <div id="wm-btns" style="text-align:right;height:25px;">
+                  <div id="wm-save-snapshot-success">success</div>
+          <div id="wm-save-snapshot-fail">fail</div>
+          <a id="wm-save-snapshot-open" href="#"
+	     title="Share via My Web Archive" >
+            <span class="iconochive-web"></span>
+          </a>
+          <a href="https://archive.org/account/login.php"
+             title="Sign In"
+             id="wm-sign-in"
+          >
+            <span class="iconochive-person"></span>
+          </a>
+          <span id="wm-save-snapshot-in-progress" class="iconochive-web"></span>
+        	<a href="http://faq.web.archive.org/" title="Get some help using the Wayback Machine" style="top:-6px;"><span class="iconochive-question" style="color:rgb(87,186,244);font-size:160%;"></span></a>
+	<a id="wm-tb-close" href="#close" onclick="__wm.h(event);return false;" style="top:-2px;" title="Close the toolbar"><span class="iconochive-remove-circle" style="color:#888888;font-size:240%;"></span></a>
+      </div>
+      <div id="wm-share">
+          <a href="/web/20191026164654/http://web.archive.org/screenshot/http://frenki.net/2013/10/fast-analogread-with-arduino-due/"
+             id="wm-screenshot"
+             title="screenshot">
+            <span class="wm-icon-screen-shot"></span>
+          </a>
+	<a id="wm-share-facebook" href="#" data-url="https://web.archive.org/web/20191026164654/http://frenki.net:80/2013/10/fast-analogread-with-arduino-due/" title="Share on Facebook" style="margin-right:5px;" target="_blank"><span class="iconochive-facebook" style="color:#3b5998;font-size:160%;"></span></a>
+	<a id="wm-share-twitter" href="#" data-url="https://web.archive.org/web/20191026164654/http://frenki.net:80/2013/10/fast-analogread-with-arduino-due/" title="Share on Twitter" style="margin-right:5px;" target="_blank"><span class="iconochive-twitter" style="color:#1dcaff;font-size:160%;"></span></a>
+      </div>
+    </div>
+    <table class="c" style="">
+      <tbody>
+	<tr>
+	  <td class="u" colspan="2">
+	    <form target="_top" method="get" action="/web/submit" name="wmtb" id="wmtb"><input type="text" name="url" id="wmtbURL" value="http://frenki.net/2013/10/fast-analogread-with-arduino-due/" onfocus="this.focus();this.select();" /><input type="hidden" name="type" value="replay" /><input type="hidden" name="date" value="20191026164654" /><input type="submit" value="Go" /></form>
+	  </td>
+	  <td class="n" rowspan="2" style="width:110px;">
+	    <table>
+	      <tbody>
+		<!-- NEXT/PREV MONTH NAV AND MONTH INDICATOR -->
+		<tr class="m">
+		  <td class="b" nowrap="nowrap"><a href="https://web.archive.org/web/20190828161457/http://frenki.net:80/2013/10/fast-analogread-with-arduino-due" title="28 Aug 2019"><strong>Aug</strong></a></td>
+		  <td class="c" id="displayMonthEl" title="You are here: 16:46:54 Oct 26, 2019">OCT</td>
+		  <td class="f" nowrap="nowrap"><a href="https://web.archive.org/web/20191225140010/http://www.frenki.net:80/2013/10/fast-analogread-with-arduino-due/" title="25 Dec 2019"><strong>Dec</strong></a></td>
+		</tr>
+		<!-- NEXT/PREV CAPTURE NAV AND DAY OF MONTH INDICATOR -->
+		<tr class="d">
+		  <td class="b" nowrap="nowrap"><a href="https://web.archive.org/web/20190929032556/http://www.frenki.net:80/2013/10/fast-analogread-with-arduino-due/" title="03:25:56 Sep 29, 2019"><img src="/_static/images/toolbar/wm_tb_prv_on.png" alt="Previous capture" width="14" height="16" border="0" /></a></td>
+		  <td class="c" id="displayDayEl" style="width:34px;font-size:24px;white-space:nowrap;" title="You are here: 16:46:54 Oct 26, 2019">26</td>
+		  <td class="f" nowrap="nowrap"><a href="https://web.archive.org/web/20191125082804/http://www.frenki.net:80/2013/10/fast-analogread-with-arduino-due/" title="08:28:04 Nov 25, 2019"><img src="/_static/images/toolbar/wm_tb_nxt_on.png" alt="Next capture" width="14" height="16" border="0" /></a></td>
+		</tr>
+		<!-- NEXT/PREV YEAR NAV AND YEAR INDICATOR -->
+		<tr class="y">
+		  <td class="b" nowrap="nowrap"><a href="https://web.archive.org/web/20181019110602/http://frenki.net:80/2013/10/fast-analogread-with-arduino-due" title="19 Oct 2018"><strong>2018</strong></a></td>
+		  <td class="c" id="displayYearEl" title="You are here: 16:46:54 Oct 26, 2019">2019</td>
+		  <td class="f" nowrap="nowrap"><a href="https://web.archive.org/web/20201111235218/http://frenki.net/2013/10/fast-analogread-with-arduino-due/" title="11 Nov 2020"><strong>2020</strong></a></td>
+		</tr>
+	      </tbody>
+	    </table>
+	  </td>
+	</tr>
+	<tr>
+	  <td class="s">
+	    	    <div id="wm-nav-captures">
+	      	      <a class="t" href="/web/20191026164654*/http://frenki.net/2013/10/fast-analogread-with-arduino-due/" title="See a list of every capture for this URL">167 captures</a>
+	      <div class="r" title="Timespan for captures of this URL">24 Jan 2014 - 11 Nov 2020</div>
+	      </div>
+	  </td>
+	  <td class="k">
+	    <a href="" id="wm-graph-anchor">
+	      <div id="wm-ipp-sparkline" title="Explore captures for this URL" style="position: relative">
+		<canvas id="wm-sparkline-canvas" width="650" height="27" border="0"></canvas>
+	      </div>
+	    </a>
+	  </td>
+	</tr>
+      </tbody>
+    </table>
+    <div style="position:absolute;bottom:0;right:2px;text-align:right;">
+      <a id="wm-expand" class="wm-btn wm-closed" href="#expand" onclick="__wm.ex(event);return false;"><span id="wm-expand-icon" class="iconochive-down-solid"></span> <span style="font-size:80%">About this capture</span></a>
+    </div>
+  </div>
+    <div id="wm-capinfo" style="border-top:1px solid #777;display:none; overflow: hidden">
+                    <div id="wm-capinfo-collected-by">
+    <div style="background-color:#666;color:#fff;font-weight:bold;text-align:center">COLLECTED BY</div>
+    <div style="padding:3px;position:relative" id="wm-collected-by-content">
+            <div style="display:inline-block;vertical-align:top;width:50%;">
+			<span class="c-logo" style="background-image:url(https://archive.org/services/img/alexacrawls);"></span>
+		Organization: <a style="color:#33f;" href="https://archive.org/details/alexacrawls" target="_new"><span class="wm-title">Alexa Crawls</span></a>
+		<div style="max-height:75px;overflow:hidden;position:relative;">
+	  <div style="position:absolute;top:0;left:0;width:100%;height:75px;background:linear-gradient(to bottom,rgba(255,255,255,0) 0%,rgba(255,255,255,0) 90%,rgba(255,255,255,255) 100%);"></div>
+	  Starting in 1996, <a href="http://www.alexa.com/">Alexa Internet</a> has been donating their crawl data to the Internet Archive.  Flowing in every day, these data are added to the <a href="http://web.archive.org/">Wayback Machine</a> after an embargo period.
+	</div>
+	      </div>
+      <div style="display:inline-block;vertical-align:top;width:49%;">
+			<span class="c-logo" style="background-image:url(https://archive.org/services/img/alexacrawls)"></span>
+		<div>Collection: <a style="color:#33f;" href="https://archive.org/details/alexacrawls" target="_new"><span class="wm-title">Alexa Crawls</span></a></div>
+		<div style="max-height:75px;overflow:hidden;position:relative;">
+	  <div style="position:absolute;top:0;left:0;width:100%;height:75px;background:linear-gradient(to bottom,rgba(255,255,255,0) 0%,rgba(255,255,255,0) 90%,rgba(255,255,255,255) 100%);"></div>
+	  Starting in 1996, <a href="http://www.alexa.com/">Alexa Internet</a> has been donating their crawl data to the Internet Archive.  Flowing in every day, these data are added to the <a href="http://web.archive.org/">Wayback Machine</a> after an embargo period.
+	</div>
+	      </div>
+    </div>
+    </div>
+    <div id="wm-capinfo-timestamps">
+    <div style="background-color:#666;color:#fff;font-weight:bold;text-align:center" title="Timestamps for the elements of this page">TIMESTAMPS</div>
+    <div>
+      <div id="wm-capresources" style="margin:0 5px 5px 5px;max-height:250px;overflow-y:scroll !important"></div>
+      <div id="wm-capresources-loading" style="text-align:left;margin:0 20px 5px 5px;display:none"><img src="/_static/images/loading.gif" alt="loading" /></div>
+    </div>
+    </div>
+  </div></div></div></div><div id="donato" style="position:relative;width:100%;">
+  <div id="donato-base">
+    <iframe id="donato-if" src="https://archive.org/includes/donate.php?as_page=1&amp;platform=wb&amp;referer=https%3A//web.archive.org/web/20191026164654/http%3A//frenki.net%3A80/2013/10/fast-analogread-with-arduino-due/"
+	    scrolling="no" frameborder="0" style="width:100%; height:100%">
+    </iframe>
+  </div>
+</div><script type="text/javascript">
+__wm.bt(650,27,25,2,"web","http://frenki.net/2013/10/fast-analogread-with-arduino-due/","20191026164654",1996,"/_static/",["/_static/css/banner-styles.css?v=bsmaklHF","/_static/css/iconochive.css?v=qtvMKcIJ"]);
+  __wm.rw(1);
+</script>
+<!-- END WAYBACK TOOLBAR INSERT -->
+<div id="wrapper">
+	<div id="header">
+		<hgroup>
+			<h1 id="site-title"><a href="https://web.archive.org/web/20191026164654/http://frenki.net/" title="FRENKI.NET" rel="home">FRENKI.NET</a></h1>
+			<h2 id="site-description">Hacking gadgets and having fun with Arduino/Attiny DIY projects</h2>
+		</hgroup>
+	</div>
+	<div id="navbar" class="menu">
+		<ul>
+			<li><a href="https://web.archive.org/web/20191026164654/http://frenki.net/">Home</a></li>
+			<li><a href="/web/20191026164654/http://frenki.net/category/DIY/">DIY</a></li>
+			<!--<li><a href="/category/hacks">Hacks</a></li>-->
+			<li><a href="/web/20191026164654/http://frenki.net/category/arduino/">Arduino</a></li>
+			<!--<li><a href="/category/attiny">Attiny</a></li>-->
+			<!--<li><a href="/category/teardowns">Teardowns</a></li>-->
+			<li><a href="/web/20191026164654/http://frenki.net/contact/">Contact</a></li>
+		</ul>
+	</div>
+	<div id="middle">
+		<div id="container">
+			<div id="content">
+<header>
+	<h1>Fast analogRead with Arduino Due</h1>
+</header>
+<div class="artmeta">
+	Posted on <time class="entry-date" datetime="2013-10-13">2013-10-13</time> by <a href="https://web.archive.org/web/20191026164654/http://frenki.net/author/" title="Written by Franci Kapel" rel="author">Franci Kapel</a>
+</div>
+<div class="artcontent">
+<!-- 728x90 -->
+<script async src="//web.archive.org/web/20191026164654js_/http://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+<!-- FN-728x90 -->
+<ins class="adsbygoogle" style="display:inline-block;width:728px;height:90px" data-ad-client="ca-pub-6483924506584584" data-ad-slot="7097639025"></ins>
+<script>
+(adsbygoogle = window.adsbygoogle || []).push({});
+</script>
+<!-- 728x90 -->
+	<p>Since the day that I got my Arduino Due I had an idea to use it as a cheap oscillosope.<br/>
+84MHz main clock was very promising but when I tried analogRead I was dissapointed to see that it needs 40uS for one conversion.</p>
+<p>I guess It could be useful for signals up to 1kHz:</p>
+<p><a href="/web/20191026164654/http://frenki.net/2013/10/fast-analogread-with-arduino-due/"><img title="arduino due analogread" alt="arduino due analogread" src="/web/20191026164654im_/http://frenki.net/2013/10/fast-analogread-with-arduino-due/images/arduino_due_adc12.png" width="636" height="247"/></a></p>
+<p>I knew there must be a better way so I went digging...</p>
+<!--more-->
+<p>First I found this great article: <a href="https://web.archive.org/web/20191026164654/http://www.djerickson.com/arduino/" target="_blank">http://www.djerickson.com/arduino/</a></p>
+
+<p>The due's default 0xC value in the ADC Mode Register sets ADC STARTUP to 768. 768 / 21MHz = 36.6uS startup time.<br/>
+So he changed that value to 2 with this line of code:</p>
+<pre>REG_ADC_MR = (REG_ADC_MR &amp; 0xFFF0FFFF) | 0x00020000;</pre>
+
+<p>Conversion time went down to 3.97uS. That is 10x improvement.</p>
+
+<p>I went digging into SA3X datasheet and found FREERUN flag which puts ADC into continuous mode.<br/>
+Enabling it made the conversion time go down to 3.12uS.</p>
+<pre>REG_ADC_MR = (REG_ADC_MR &amp; 0xFFFFFF0F) | 0x00000080; //enable FREERUN mode</pre>
+
+<p>After testing all sorts of configurations I found another optimization:</p>
+<pre>analogReadResolution(12);</pre>
+<p>This lowered conversion time to 3.11uS and increased resolution to 12bits.</p>
+
+<p>On the arduino forum user "Totv" <a href="https://web.archive.org/web/20191026164654/http://goo.gl/jdRjc0" target="_blank">http://goo.gl/jdRjc0</a> suggested commenting out line 164 in file \arduino-1.5.1r2\hardware\arduino\sam\cores\arduino\wiring_analog.c</p>
+<pre>//adc_disable_channel(ADC, ulChannel);</pre>
+<p>Beacuse there is no need to disable ADC after every conversion.</p>
+
+<p>With this improvement conversion time dropped to 1.79uS.</p>
+
+<p>I could now measure 10kHz signal with no problem:</p>
+<p><img title="arduino due 10kHz and 50kHz" alt="arduino due 10kHz and 50kHz" src="/web/20191026164654im_/http://frenki.net/2013/10/fast-analogread-with-arduino-due/images/arduino_due_adc34.png" width="605" height="247"/></p>
+
+<p>But then I found great piece of code from arduino forum user "stimmer" which ignores analogRead by using more direct approach: <a href="https://web.archive.org/web/20191026164654/http://goo.gl/Bn8Z4P" target="_blank">http://goo.gl/Bn8Z4P</a><br/>
+With this solution single conversion takes only 1uS. And now we have a cheap 1MSa/s oscilloscope. ;) </p>
+<pre>
+unsigned long start_time;
+unsigned long stop_time;
+unsigned long values[1000];
+
+void setup() {        
+  Serial.begin(9600);  
+  ADC-&gt;ADC_MR |= 0x80;  //set free running mode on ADC
+  ADC-&gt;ADC_CHER = 0x80; //enable ADC on pin A0
+}
+
+void loop() {
+  unsigned int i;
+    
+  start_time = micros();
+  for(i=0;i&lt;1000;i++){
+    while((ADC-&gt;ADC_ISR &amp; 0x80)==0); // wait for conversion
+    values[i]=ADC-&gt;ADC_CDR[7]; //get values
+  }
+  stop_time = micros();
+
+  Serial.print("Total time: ");
+  Serial.println(stop_time-start_time); 
+  Serial.print("Average time per conversion: ");
+  Serial.println((float)(stop_time-start_time)/1000);
+
+  Serial.println("Values: ");
+  for(i=0;i&lt;1000;i++) {
+    Serial.println(values[i]);
+  }
+  
+  delay(2000);
+}
+</pre>
+
+<p>Measured signals:</p>
+<p><img title="arduino due 1MSPS adc" alt="arduino due 1MSPS adc" src="/web/20191026164654im_/http://frenki.net/2013/10/fast-analogread-with-arduino-due/images/arduino_due_adc56.png" width="603" height="250"/></p>
+<p><img title="arduino due 100kHz" alt="arduino due 100kHz" src="/web/20191026164654im_/http://frenki.net/2013/10/fast-analogread-with-arduino-due/images/arduino_due_adc7.png" width="320" height="250"/></p>
+
+I hope you will find this "quest" for fast Arduino Due ADC usefull :)
+
+<!-- 336x280 -->
+<script async src="//web.archive.org/web/20191026164654js_/http://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+<!-- FN-336x280 -->
+<ins class="adsbygoogle" style="display:inline-block;width:336px;height:280px" data-ad-client="ca-pub-6483924506584584" data-ad-slot="8574372220"></ins>
+<script>
+(adsbygoogle = window.adsbygoogle || []).push({});
+</script>
+<!-- 336x280 -->	
+</div>
+<div class="artmeta">
+	<span>Permalink: <a href="https://web.archive.org/web/20191026164654/http://frenki.net/2013/10/fast-analogread-with-arduino-due/">Fast analogRead with Arduino Due</a></span>
+	<span>Tags: <a href="/web/20191026164654/http://frenki.net/category/arduino/">arduino</a>, <a href="/web/20191026164654/http://frenki.net/category/Arduino Due/">Arduino Due</a>, <a href="/web/20191026164654/http://frenki.net/category/oscilloscope/">oscilloscope</a>, <a href="/web/20191026164654/http://frenki.net/category/ADC/">ADC</a></span>
+</div>
+<div class="authorbox">
+	<img alt="Franci Kapel" src="https://web.archive.org/web/20191026164654im_/http://5fe51e7c4b1ccf53b8af-3cb2e2dc219e5f7744483c344df354d0.r88.cf2.rackcdn.com/FranciKapel3.jpg" height="55" width="55">Franci is an experienced web developer who spends most of his free time hacking gadgets. Site frenki.net was made to help others with their projects. Connect with Franci on <a href="https://web.archive.org/web/20191026164654/https://plus.google.com/u/0/104829786399890053278?rel=author">Google+</a>
+</div>
+<div id="fb-root"></div>
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) return;
+  js = d.createElement(s); js.id = id;
+  js.src = "//web.archive.org/web/20191026164654/http://connect.facebook.net/en_US/all.js#xfbml=1&appId=280050842099767";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+<div class="fb-comments" data-href="http://frenki.net/2013/10/fast-analogread-with-arduino-due/" data-num-posts="10" data-width="600"></div>
+			</div><!-- #content-->
+		</div><!-- #container-->
+		<div id="sideRight">
+<h3>RECENT POSTS</h3>
+<ul>
+	<li><a href="/web/20191026164654/http://frenki.net/2013/12/convert-optical-mouse-into-arduino-web-camera/" title="Convert Optical Mouse into Arduino Web Camera">Convert Optical Mouse into Arduino Web Camera</a></li>
+<li><a href="/web/20191026164654/http://frenki.net/2013/10/fast-analogread-with-arduino-due/" title="Fast analogRead with Arduino Due">Fast analogRead with Arduino Due</a></li>
+<li><a href="/web/20191026164654/http://frenki.net/2013/09/diy-water-vacuum-cleaner-to-dry-workshop-vacuum-conversion/" title="DIY Water Vacuum Cleaner to Dry Workshop Vacuum Conversion">DIY Water Vacuum Cleaner to Dry Workshop Vacuum Conversion</a></li>
+<li><a href="/web/20191026164654/http://frenki.net/2012/10/remote-logging-with-arduino-and-node-js/" title="Remote logging with Arduino and Node.js">Remote logging with Arduino and Node.js</a></li>
+<li><a href="/web/20191026164654/http://frenki.net/2012/09/slave-flash-trigger-without-battery/" title="Slave Flash Trigger Without Battery">Slave Flash Trigger Without Battery</a></li>
+<li><a href="/web/20191026164654/http://frenki.net/2012/09/simple-diy-slave-flash-trigger-for-your-camera/" title="Simple DIY Slave Flash Trigger for your camera">Simple DIY Slave Flash Trigger for your camera</a></li>
+
+</ul>
+<!-- 300x250 -->
+<script async src="//web.archive.org/web/20191026164654js_/http://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+<!-- FN-300x250 -->
+<ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-6483924506584584" data-ad-slot="1051105424"></ins>
+<script>
+(adsbygoogle = window.adsbygoogle || []).push({});
+</script>
+<!-- 300x250 -->
+<h3>CONNECT</h3>
+<ul>
+	<li><a href="https://web.archive.org/web/20191026164654/http://frenki.net/rss.xml" title="RSS">Frenki.net RSS Feed</a></li>
+	<li><a href="https://web.archive.org/web/20191026164654/https://plus.google.com/103622839960341382589" rel="publisher">Google+</a></li>
+</ul>
+<h3>DIY &amp; HACKS BLOGS</h3>
+<ul>
+	<li><a href="https://web.archive.org/web/20191026164654/http://hackaday.com/" title="Hack a day">Hack A Day</a></li>
+	<li><a href="https://web.archive.org/web/20191026164654/http://dangerousprototypes.com/" title="Dangerous Prototypes">Dangerous Prototypes</a></li>
+	<li><a href="https://web.archive.org/web/20191026164654/http://www.adafruit.com/blog/" title="Adafruit blog">Adafruit blog</a></li>
+</ul>
+<h3>EXTERNAL TUTORIALS</h3>
+<ul>
+	<li><a href="https://web.archive.org/web/20191026164654/http://www.ladyada.net/learn/arduino/" title="Arduino tutorials by Ladyada.net">Arduino tutorials by Ladyada.net</a></li>
+	<li><a href="https://web.archive.org/web/20191026164654/http://arduino.cc/en/Tutorial/HomePage/" title="Arduino tutorials on Arduino.cc">Arduino tutorials on Arduino.cc</a></li>
+	<li><a href="https://web.archive.org/web/20191026164654/http://hlt.media.mit.edu/?p=1695" title="Programming Attiny by MIT.edu">Programming Attiny by MIT.edu</a></li>
+</ul>
+		</div><!-- .sidebar#sideRight -->
+	</div><!-- #middle-->
+	<div id="footer">
+		All rights reserved by Franci Kapel. <a href="/web/20191026164654/http://frenki.net/privacypolicy/">Privacy Policy</a>
+	</div><!-- #footer -->
+</div><!-- #wrapper -->
+</body>
+</html><!--
+     FILE ARCHIVED ON 16:46:54 Oct 26, 2019 AND RETRIEVED FROM THE
+     INTERNET ARCHIVE ON 23:31:45 Mar 15, 2021.
+     JAVASCRIPT APPENDED BY WAYBACK MACHINE, COPYRIGHT INTERNET ARCHIVE.
+
+     ALL OTHER CONTENT MAY ALSO BE PROTECTED BY COPYRIGHT (17 U.S.C.
+     SECTION 108(a)(3)).
+-->
+<!--
+playback timings (ms):
+  exclusion.robots.policy: 0.461
+  LoadShardBlock: 94.706 (3)
+  captures_list: 139.892
+  RedisCDXSource: 1.129
+  CDXLines.iter: 29.599 (3)
+  PetaboxLoader3.resolve: 24.769
+  esindex: 0.019
+  PetaboxLoader3.datanode: 132.655 (4)
+  exclusion.robots: 0.483
+  load_resource: 96.808
+-->

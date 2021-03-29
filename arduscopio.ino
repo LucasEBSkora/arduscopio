@@ -15,6 +15,7 @@ uint16_t* valores;
 unsigned int setupADC() {
 
   // Uma das referências usadas: http://frenki.net/2013/10/fast-analogread-with-arduino-due/
+  //essse site caiu, tem a referência salva em texto
 
   //Liga o clock do ADC
   //isso provavelmente é feito por padrão, mas é melhor garantir
@@ -24,7 +25,7 @@ unsigned int setupADC() {
   //PMC_PCDR1 é um registrador que controla se os clocks dos periféricos estão desligados
   bitClear(PMC->PMC_PCDR1, 5);
 
-  //basicamente, para garantir que o clock está ligado, é necessário que o bit correspondete
+  //basicamente, para garantir que o clock está ligado, é necessário que o bit correspondente
   //no primeiro registrador está em 1 e no segundo está em 0 
 
   //Valor padrão do registrador de configuração do ADC (ADC_MR): 272105984
@@ -60,10 +61,9 @@ unsigned int adquirirUnico() { //Função usada para fazer uma única leitura
 
 
 //adquire os valores necessários de acordo com as configurações feitas
-void adquirir(unsigned int *valores, unsigned int numeroAmostras) {
+void adquirir(uint16_t *valores, unsigned int numeroAmostras) {
 
   int i;
-
   //acumulador do tempo passado entre ciclos, usado para controlar o tempo passado entre amostragens
   unsigned int deltaT = 0;
   
@@ -71,16 +71,13 @@ void adquirir(unsigned int *valores, unsigned int numeroAmostras) {
      i = 0;
    } else if (Configuracoes.tipoTrigger == subida) { //Com trigger: quando o sinal passar do valor de Configuracoes.nivelTrigger subindo, o sinal começa a ser adquirido "de verdade"
     
-
     int anterior = adquirirUnico(), atual = adquirirUnico();
-
     Relogio.reiniciar();
-
 
     //Fica lendo até o último valor lido ser maior que o nivelTrigger e o penúltimo menor, ou seja, acabou de passar pelo valor do trigger e está subindo
     //ou se 10k*o tempo desejado entre amostras passar e o sinal não passar pelo trigger, começa a adquirir mesmo assim, para o sistema não ficar bloqueado.
 
-    while ((anterior >= Configuracoes.nivelTrigger || atual < Configuracoes.nivelTrigger) && deltaT <= 10000*Configuracoes.microMinEntreAmostras) {
+    while ((anterior >= Configuracoes.nivelTrigger || atual < Configuracoes.nivelTrigger)){ //&& deltaT <= 10000*Configuracoes.microMinEntreAmostras)) {
       anterior = atual;
       atual = adquirirUnico();
       deltaT += Relogio.variacao();
@@ -93,13 +90,10 @@ void adquirir(unsigned int *valores, unsigned int numeroAmostras) {
   } else { //Com trigger: quando o sinal passar do valor de Configuracoes.nivelTrigger descendo, o sinal começa a ser adquirido "de verdade"
     
     //Mesma lógica que o trigger de subida
-    
     int anterior = adquirirUnico(), atual = adquirirUnico();
-
-
     Relogio.reiniciar();
     
-    while ((anterior <= Configuracoes.nivelTrigger || atual > Configuracoes.nivelTrigger) && deltaT <= 10000*Configuracoes.microMinEntreAmostras) {
+    while ((anterior <= Configuracoes.nivelTrigger || atual > Configuracoes.nivelTrigger)){ //&& deltaT <= 10000*Configuracoes.microMinEntreAmostras) {
       anterior = atual;
       atual = adquirirUnico();
       deltaT += Relogio.variacao(); 
@@ -107,50 +101,42 @@ void adquirir(unsigned int *valores, unsigned int numeroAmostras) {
     valores[0] = atual;
     i = 1;
   }
-
-
   //Se o tempo desejado entre amostras é 0, o sistema adquirirá valores o mais rápido possível
   if (Configuracoes.microMinEntreAmostras == 0) {
     //TODO: testar se é mais rápido usando aritmética de ponteiros
     for (; i < numeroAmostras; ++i) {
       valores[i] = adquirirUnico();
-  
     }  
   } else {    
-
-
     //Fica esperando o tempo passar até o intervalo desde a última amostra ser maior do que o tempo desejado.
     //Para valores muito pequenos, não funcionará
     Relogio.reiniciar();
-
+    
     while (i < numeroAmostras) {
-
       deltaT += Relogio.variacao();
-      
+  
       if (deltaT > Configuracoes.microMinEntreAmostras) {
-        
         valores[i++] = adquirirUnico();
         deltaT -= Configuracoes.microMinEntreAmostras;
-
       }
-      
-    } 
-      
-  }
-  
+    }    
+  } 
 }
 
 //Transmite os sinais para o computador
-void transmitir(unsigned int *valores, unsigned int numeroAmostras) {
-
-
-  int i;
-
-  for (i = 0; i < numeroAmostras; ++i) {
+void transmitir(uint16_t *valores, unsigned int numeroAmostras) {
+  Serial.write((byte*)valores, 2*numeroAmostras);
+  /*uint8_t* vals = (uint8_t*) valores;
+  for (int i = 0; i < numeroAmostras*2; ++i) {
     //converte valores do ADC para valores de tensão
-    Serial.println(3.3*valores[i]/Configuracoes.valorMax);
-    //Serial.println(valores[i]);
-  }
+    //Serial.println(3.3*valores[i]/Configuracoes.valorMax);
+    
+    
+    Serial.print(vals[2*i]);
+    Serial.print(" ");
+    Serial.println(vals[2*i + 1]);
+  }*/
+  
 }
 
 
@@ -170,9 +156,6 @@ void setup() {
   setupADC();
   
   Serial.setTimeout(10);
-
-  
-
 }
 
 
@@ -180,7 +163,7 @@ void setup() {
 String adquirirPalavra() {
   String comando = Serial.readStringUntil(' ');
   
-  if (comando[comando.length() - 1] == '\n') //se houver, remove new line
+  if (comando[comando.length() - 1] == '\n') //se houver, remove \n
     comando.remove(comando.length() - 1);
 
    return comando;
@@ -188,15 +171,12 @@ String adquirirPalavra() {
 
 
 void loop() {
-  
   //Se há dados na interface serial, os lê 
   //e usa o comando passado para fazer alguma coisa
   if (Serial.available()) {
       String comando = adquirirPalavra();
       
       if (comando == "LER") {
-
-        Serial.println(0);
         adquirir(valores, Configuracoes.numeroAmostras);
         transmitir(valores, Configuracoes.numeroAmostras);
       
@@ -211,9 +191,8 @@ void loop() {
         Configuracoes.setNivelTrigger(atof(comando.c_str()));
         
       } else if (comando == "RESOLUCAO") {
-      
         comando = adquirirPalavra();
-        Configuracoes.setRes(int(comando.c_str()));
+        Configuracoes.setRes(atoi(comando.c_str()));
       
       } else if (comando == "MINTEMPO") {
       
