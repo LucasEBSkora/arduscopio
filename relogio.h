@@ -8,8 +8,6 @@
 class relogio {
   private:
     unsigned long t0;
-    unsigned long tf;
-    unsigned long dt;
   
   public:
     //Construtor sem parâmetros
@@ -20,7 +18,7 @@ class relogio {
     //reinicia o timer
     void reiniciar();
     
-    //retorna o tempo em milissegundos desde à última chamada a variacao ou reiniciar 
+    //retorna o tempo em milissegundos desde à última chamada a reiniciar 
     unsigned long variacao();
     
   

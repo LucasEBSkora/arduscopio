@@ -11,6 +11,9 @@ configuracoes Configuracoes;
 //Onde os valores medidos são armazenados. Pode ser armazenado em um unsigned short pois os valores nunca são negativos e, na resolução máxima, ocupam até 12 bits.
 uint16_t* valores;
 
+//guarda o tempo usado para medir todas as amostras.
+uint32_t tempo;
+
 //manipula os registradores para permitir a leitura manual do ADC (sem usar analogRead)
 unsigned int setupADC() {
 
@@ -52,11 +55,8 @@ unsigned int adquirirUnico() { //Função usada para fazer uma única leitura
 
   ADC->ADC_CR = 2;//Começa conversão
   while (!(ADC->ADC_ISR & 0x80)); //espera conversão
-  //retorna o valor lido no canal 7 já com o valor adaptado para a resolução desejada usando shift para a direita 
-  // (descartando os bits menos signifcativos se necessário)
-
-  //TODO: esse jeito de fazer é burro, faça o shift depois de ler tudo
-  return ADC->ADC_CDR[7] >> (12 - Configuracoes.resolucao);
+  
+  return ADC->ADC_CDR[7];
 }
 
 
@@ -64,11 +64,10 @@ unsigned int adquirirUnico() { //Função usada para fazer uma única leitura
 void adquirir(uint16_t *valores, unsigned int numeroAmostras) {
 
   int i;
-  //acumulador do tempo passado entre ciclos, usado para controlar o tempo passado entre amostragens
-  unsigned int deltaT = 0;
   
    if (Configuracoes.tipoTrigger == desativado) { //Sem trigger: Simplesmente começa a adquirir o sinal imediatamente
      i = 0;
+     tempo = micros();
    } else if (Configuracoes.tipoTrigger == subida) { //Com trigger: quando o sinal passar do valor de Configuracoes.nivelTrigger subindo, o sinal começa a ser adquirido "de verdade"
     
     int anterior = adquirirUnico(), atual = adquirirUnico();
@@ -79,8 +78,8 @@ void adquirir(uint16_t *valores, unsigned int numeroAmostras) {
 
     while ((anterior >= Configuracoes.nivelTrigger || atual < Configuracoes.nivelTrigger)){ //&& deltaT <= 10000*Configuracoes.microMinEntreAmostras)) {
       anterior = atual;
+      tempo = micros();
       atual = adquirirUnico();
-      deltaT += Relogio.variacao();
     }
     
     //guarda esse valor 
@@ -95,9 +94,10 @@ void adquirir(uint16_t *valores, unsigned int numeroAmostras) {
     
     while ((anterior <= Configuracoes.nivelTrigger || atual > Configuracoes.nivelTrigger)){ //&& deltaT <= 10000*Configuracoes.microMinEntreAmostras) {
       anterior = atual;
+      tempo = micros();
       atual = adquirirUnico();
-      deltaT += Relogio.variacao(); 
     }
+    
     valores[0] = atual;
     i = 1;
   }
@@ -111,21 +111,39 @@ void adquirir(uint16_t *valores, unsigned int numeroAmostras) {
     //Fica esperando o tempo passar até o intervalo desde a última amostra ser maior do que o tempo desejado.
     //Para valores muito pequenos, não funcionará
     Relogio.reiniciar();
-    
+
     while (i < numeroAmostras) {
-      deltaT += Relogio.variacao();
-  
-      if (deltaT > Configuracoes.microMinEntreAmostras) {
+        
+        if (Relogio.variacao() > Configuracoes.microMinEntreAmostras) {
+          ADC->ADC_CR = 2;//Começa conversão
+          Relogio.reiniciar();
+        }
+        if ((ADC->ADC_ISR & 0x80)) {
+          valores[i++] =ADC->ADC_CDR[7];
+        }
+ 
+    }
+
+    
+/*    while (i < numeroAmostras) {
+      if (Relogio.variacao() > Configuracoes.microMinEntreAmostras) {
         valores[i++] = adquirirUnico();
-        deltaT -= Configuracoes.microMinEntreAmostras;
+        Relogio.reiniciar();
       }
-    }    
-  } 
+    }*/    
+  }
+  tempo = micros() - tempo;
+
+  //faz o shift lógico para manter a resolução desejada
+  for (int i = 0; i < numeroAmostras; ++i) {
+    valores[i] = valores[i] >> (12 - Configuracoes.resolucao);
+  }
 }
 
 //Transmite os sinais para o computador
 void transmitir(uint16_t *valores, unsigned int numeroAmostras) {
-  Serial.write((byte*)valores, 2*numeroAmostras);
+    Serial.write((byte*)valores, 2*numeroAmostras);
+    Serial.write((byte*)&tempo, 4);
   /*uint8_t* vals = (uint8_t*) valores;
   for (int i = 0; i < numeroAmostras*2; ++i) {
     //converte valores do ADC para valores de tensão
@@ -179,6 +197,7 @@ void loop() {
       if (comando == "LER") {
         adquirir(valores, Configuracoes.numeroAmostras);
         transmitir(valores, Configuracoes.numeroAmostras);
+        //Serial.println(tempo);
       
       } else if (comando == "TRIG") {
       

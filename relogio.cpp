@@ -12,8 +12,5 @@ void relogio::reiniciar() {
 }
 
 unsigned long relogio::variacao() {
-  tf = micros();
-  dt = tf - t0;
-  t0 = micros();
-  return dt;
+  return micros() - t0;
 }
