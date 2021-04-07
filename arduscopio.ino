@@ -35,10 +35,10 @@ unsigned int setupADC() {
 
   //inicializa registrador de configuração do ADC
   
-  byte PRESCAL = 2;
-  byte STARTUP = 8;
+  byte PRESCAL = 0;
+  byte STARTUP = 1;
   byte SETTLING = 3;
-  byte TRANSFER = 1;
+  byte TRANSFER = 3;
   ADC->ADC_MR = (PRESCAL << 8) + (STARTUP << 16) + (SETTLING << 20) + (TRANSFER << 28);
 
   //ADC channel enable register: liga o canal 7, que corresponde ao pino ADC0 do arduino due
@@ -63,6 +63,7 @@ unsigned int adquirirUnico() { //Função usada para fazer uma única leitura
 //adquire os valores necessários de acordo com as configurações feitas
 void adquirir(uint16_t *valores, unsigned int numeroAmostras) {
 
+  uint32_t timeout = (Configuracoes.microMinEntreAmostras != 0 ? Configuracoes.microMinEntreAmostras : 1) * 10000; 
   int i;
   
    if (Configuracoes.tipoTrigger == desativado) { //Sem trigger: Simplesmente começa a adquirir o sinal imediatamente
@@ -76,7 +77,7 @@ void adquirir(uint16_t *valores, unsigned int numeroAmostras) {
     //Fica lendo até o último valor lido ser maior que o nivelTrigger e o penúltimo menor, ou seja, acabou de passar pelo valor do trigger e está subindo
     //ou se 10k*o tempo desejado entre amostras passar e o sinal não passar pelo trigger, começa a adquirir mesmo assim, para o sistema não ficar bloqueado.
 
-    while ((anterior >= Configuracoes.nivelTrigger || atual < Configuracoes.nivelTrigger)){ //&& deltaT <= 10000*Configuracoes.microMinEntreAmostras)) {
+    while ((anterior >= Configuracoes.nivelTrigger || atual < Configuracoes.nivelTrigger) && Relogio.variacao() <= timeout) {
       anterior = atual;
       tempo = micros();
       atual = adquirirUnico();
@@ -92,7 +93,7 @@ void adquirir(uint16_t *valores, unsigned int numeroAmostras) {
     int anterior = adquirirUnico(), atual = adquirirUnico();
     Relogio.reiniciar();
     
-    while ((anterior <= Configuracoes.nivelTrigger || atual > Configuracoes.nivelTrigger)){ //&& deltaT <= 10000*Configuracoes.microMinEntreAmostras) {
+    while ((anterior <= Configuracoes.nivelTrigger || atual > Configuracoes.nivelTrigger)  && Relogio.variacao() <= timeout) {
       anterior = atual;
       tempo = micros();
       atual = adquirirUnico();
