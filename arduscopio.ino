@@ -36,10 +36,11 @@ unsigned int setupADC() {
   //inicializa registrador de configuração do ADC
   
   byte PRESCAL = 0;
+  byte FREERUN = 1;
   byte STARTUP = 1;
   byte SETTLING = 3;
   byte TRANSFER = 3;
-  ADC->ADC_MR = (PRESCAL << 8) + (STARTUP << 16) + (SETTLING << 20) + (TRANSFER << 28);
+  ADC->ADC_MR = (FREERUN << 7) +  (PRESCAL << 8) + (STARTUP << 16) + (SETTLING << 20) + (TRANSFER << 28);
 
   //ADC channel enable register: liga o canal 7, que corresponde ao pino ADC0 do arduino due
 
@@ -53,8 +54,9 @@ unsigned int setupADC() {
 
 unsigned int adquirirUnico() { //Função usada para fazer uma única leitura
 
-  ADC->ADC_CR = 2;//Começa conversão
-  while (!(ADC->ADC_ISR & 0x80)); //espera conversão
+  //Essas linhas só são importantes fora do modo free-running
+  //ADC->ADC_CR = 2;//Começa conversão
+  //while (!(ADC->ADC_ISR & 0x80)); //espera conversão 
   
   return ADC->ADC_CDR[7];
 }
@@ -104,7 +106,6 @@ void adquirir(uint16_t *valores, unsigned int numeroAmostras) {
   }
   //Se o tempo desejado entre amostras é 0, o sistema adquirirá valores o mais rápido possível
   if (Configuracoes.microMinEntreAmostras == 0) {
-    //TODO: testar se é mais rápido usando aritmética de ponteiros
     for (; i < numeroAmostras; ++i) {
       valores[i] = adquirirUnico();
     }  
@@ -115,23 +116,11 @@ void adquirir(uint16_t *valores, unsigned int numeroAmostras) {
 
     while (i < numeroAmostras) {
         
-        if (Relogio.variacao() > Configuracoes.microMinEntreAmostras) {
-          ADC->ADC_CR = 2;//Começa conversão
+        if (Relogio.variacao() >= Configuracoes.microMinEntreAmostras) {
+          valores[i++] =ADC->ADC_CDR[7];
           Relogio.reiniciar();
         }
-        if ((ADC->ADC_ISR & 0x80)) {
-          valores[i++] =ADC->ADC_CDR[7];
-        }
- 
     }
-
-    
-/*    while (i < numeroAmostras) {
-      if (Relogio.variacao() > Configuracoes.microMinEntreAmostras) {
-        valores[i++] = adquirirUnico();
-        Relogio.reiniciar();
-      }
-    }*/    
   }
   tempo = micros() - tempo;
 
@@ -144,18 +133,7 @@ void adquirir(uint16_t *valores, unsigned int numeroAmostras) {
 //Transmite os sinais para o computador
 void transmitir(uint16_t *valores, unsigned int numeroAmostras) {
     Serial.write((byte*)valores, 2*numeroAmostras);
-    Serial.write((byte*)&tempo, 4);
-  /*uint8_t* vals = (uint8_t*) valores;
-  for (int i = 0; i < numeroAmostras*2; ++i) {
-    //converte valores do ADC para valores de tensão
-    //Serial.println(3.3*valores[i]/Configuracoes.valorMax);
-    
-    
-    Serial.print(vals[2*i]);
-    Serial.print(" ");
-    Serial.println(vals[2*i + 1]);
-  }*/
-  
+    Serial.write((byte*)&tempo, 4);  
 }
 
 
@@ -196,9 +174,9 @@ void loop() {
       String comando = adquirirPalavra();
       
       if (comando == "LER") {
+        
         adquirir(valores, Configuracoes.numeroAmostras);
         transmitir(valores, Configuracoes.numeroAmostras);
-        //Serial.println(tempo);
       
       } else if (comando == "TRIG") {
       
