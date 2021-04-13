@@ -1,6 +1,8 @@
 #define PINO_AQUISICAO A0
 
-#include "limits.h"
+//https://github.com/ivanseidel/DueTimer
+#include <DueTimer.h>
+#include <limits.h>
 
 #include "relogio.h"
 relogio Relogio;
@@ -10,7 +12,7 @@ configuracoes Configuracoes;
 
 //Onde os valores medidos são armazenados. Pode ser armazenado em um unsigned short pois os valores nunca são negativos e, na resolução máxima, ocupam até 12 bits.
 uint16_t* valores;
-
+volatile int i;
 //guarda o tempo usado para medir todas as amostras.
 uint32_t tempo;
 
@@ -61,18 +63,21 @@ unsigned int adquirirUnico() { //Função usada para fazer uma única leitura
   return ADC->ADC_CDR[7];
 }
 
+void adquirirComTemporizador() {
+  ++i;
+}
+
 
 //adquire os valores necessários de acordo com as configurações feitas
 void adquirir(uint16_t *valores, unsigned int numeroAmostras) {
 
   uint32_t timeout = (Configuracoes.microMinEntreAmostras != 0 ? Configuracoes.microMinEntreAmostras : 1) * 10000; 
-  int i;
   
    if (Configuracoes.tipoTrigger == desativado) { //Sem trigger: Simplesmente começa a adquirir o sinal imediatamente
      i = 0;
      tempo = micros();
    } else if (Configuracoes.tipoTrigger == subida) { //Com trigger: quando o sinal passar do valor de Configuracoes.nivelTrigger subindo, o sinal começa a ser adquirido "de verdade"
-    
+    i = 1;
     int anterior = adquirirUnico(), atual = adquirirUnico();
     Relogio.reiniciar();
 
@@ -88,9 +93,9 @@ void adquirir(uint16_t *valores, unsigned int numeroAmostras) {
     //guarda esse valor 
     valores[0] = atual;
 
-    i = 1;
+
   } else { //Com trigger: quando o sinal passar do valor de Configuracoes.nivelTrigger descendo, o sinal começa a ser adquirido "de verdade"
-    
+    i = 1;
     //Mesma lógica que o trigger de subida
     int anterior = adquirirUnico(), atual = adquirirUnico();
     Relogio.reiniciar();
@@ -102,7 +107,7 @@ void adquirir(uint16_t *valores, unsigned int numeroAmostras) {
     }
     
     valores[0] = atual;
-    i = 1;
+
   }
   //Se o tempo desejado entre amostras é 0, o sistema adquirirá valores o mais rápido possível
   if (Configuracoes.microMinEntreAmostras == 0) {
@@ -113,17 +118,13 @@ void adquirir(uint16_t *valores, unsigned int numeroAmostras) {
     //Fica esperando o tempo passar até o intervalo desde a última amostra ser maior do que o tempo desejado.
     //Para valores muito pequenos, não funcionará
     Relogio.reiniciar();
-
-    while (i < numeroAmostras) {
-        
-        if (Relogio.variacao() >= Configuracoes.microMinEntreAmostras) {
-          valores[i++] =ADC->ADC_CDR[7];
-          Relogio.reiniciar();
-        }
-    }
+    Timer1.start(Configuracoes.microMinEntreAmostras);
+    while (i < numeroAmostras) 
+      valores[i] = adquirirUnico();
+    
+    Timer1.stop();
   }
   tempo = micros() - tempo;
-
   //faz o shift lógico para manter a resolução desejada
   for (int i = 0; i < numeroAmostras; ++i) {
     valores[i] = valores[i] >> (12 - Configuracoes.resolucao);
@@ -141,18 +142,14 @@ void transmitir(uint16_t *valores, unsigned int numeroAmostras) {
 void setup() {
   Serial.begin(115200);  
 
-
-  //Linhas abaixo podem ser substituidas por calloc?
-
-  //TODO: permitir configurar número de amostras
   valores = (uint16_t*) malloc(sizeof(uint16_t) * Configuracoes.numeroAmostras);
-
-  //Inicializa valores em 0
   for(int i = 0; i < Configuracoes.numeroAmostras; ++i) valores[i] = 0;
     
   setupADC();
   
   Serial.setTimeout(10);
+
+  Timer1.attachInterrupt(adquirirComTemporizador);
 }
 
 
