@@ -1,7 +1,7 @@
 #include "configuracoes.h"
 
 configuracoes::configuracoes() {
-  tipoTrigger = desativado;
+  tipoTrigger = subida;
   nivelTrigger = 2000;
   microMinEntreAmostras = 0;
   numeroAmostras = 500;
