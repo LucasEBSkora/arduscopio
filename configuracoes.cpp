@@ -2,7 +2,7 @@
 
 configuracoes::configuracoes() {
   tipoTrigger = subida;
-  nivelTrigger = 2000;
+  nivelTrigger = 500;
   microMinEntreAmostras = 0;
   numeroAmostras = 500;
   resolucao = 12;

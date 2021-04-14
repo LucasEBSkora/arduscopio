@@ -37,20 +37,19 @@ unsigned int setupADC() {
 
   //inicializa registrador de configuração do ADC
 
-  byte PRESCAL = 0;
+  byte PRESCAL = 3;
   byte FREERUN = 1;
   byte STARTUP = 1;
   byte SETTLING = 3;
   byte TRANSFER = 3;
-  ADC->ADC_MR = (FREERUN << 7) +  (PRESCAL << 8) + (STARTUP << 16) + (SETTLING << 20) + (TRANSFER << 28);
+  byte LOWRES = 1;
+  ADC->ADC_MR = (LOWRES << 4) + (FREERUN << 7) +  (PRESCAL << 8) + (STARTUP << 16) + (SETTLING << 20) + (TRANSFER << 28);
 
   //ADC channel enable register: liga o canal 7, que corresponde ao pino ADC0 do arduino due
 
   // 0b0100000 = 0x80
   ADC->ADC_CHER = 0x80;
 
-  //  Serial.println((PRESCAL << 8) + (STARTUP << 16) + (SETTLING << 20) + (TRANSFER << 28));
-  //  Serial.println(ADC->ADC_MR);
 }
 
 
@@ -74,10 +73,9 @@ void adquirir(uint16_t *valores, unsigned int numeroAmostras) {
   uint32_t timeout = (Configuracoes.microMinEntreAmostras != 0 ? Configuracoes.microMinEntreAmostras : 1) * 10000;
 
   if (Configuracoes.tipoTrigger == desativado) { //Sem trigger: Simplesmente começa a adquirir o sinal imediatamente
-    i = 0;
     tempo = micros();
+    valores[0] = adquirirUnico();
   } else { //Com trigger: quando o sinal passar do valor de Configuracoes.nivelTrigger subindo/descendo, o sinal começa a ser adquirido "de verdade"
-    i = 1;
     int anterior = adquirirUnico();
     Relogio.reiniciar();
     valores[0] = adquirirUnico();
@@ -101,6 +99,7 @@ void adquirir(uint16_t *valores, unsigned int numeroAmostras) {
     }
   }
   //Se o tempo desejado entre amostras é 0, o sistema adquirirá valores o mais rápido possível
+  i = 1;
   if (Configuracoes.microMinEntreAmostras == 0) {
     for (; i < numeroAmostras; ++i) {
       valores[i] = adquirirUnico();
